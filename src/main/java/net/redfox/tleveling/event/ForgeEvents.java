@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ToolActions;
@@ -27,6 +28,7 @@ import net.redfox.tleveling.leveling.ToolExp;
 import net.redfox.tleveling.leveling.TooltipDisplay;
 import net.redfox.tleveling.util.ModKeybinds;
 import slimeknights.tconstruct.library.events.TinkerToolEvent;
+import slimeknights.tconstruct.tools.entity.ThrownTool;
 
 public class ForgeEvents {
   private static boolean skip = false;
@@ -115,8 +117,13 @@ public class ForgeEvents {
       if (!event.getRayTraceResult().getType().equals(HitResult.Type.ENTITY)) return;
 
       if (event.getProjectile().getOwner() instanceof Player player) {
-        if (!ToolExp.RANGED_DAMAGE_ENTITIES.contains(player.getMainHandItem().getItem())) return;
-        ToolExp.addExpToTool(player, player.getMainHandItem(), 5 * TinkersLevelingCommonConfigs.KILL_EXP_MULTIPLIER.get());
+        ItemStack tool = player.getMainHandItem();
+        if (event.getProjectile() instanceof ThrownTool thrownTool && tool.getItem() != thrownTool.getDisplayTool().getItem()) {
+          tool = thrownTool.getDisplayTool();
+        }
+
+        if (!ToolExp.RANGED_DAMAGE_ENTITIES.contains(tool.getItem())) return;
+        ToolExp.addExpToTool(player, tool, 5 * TinkersLevelingCommonConfigs.KILL_EXP_MULTIPLIER.get());
       }
     }
   }
