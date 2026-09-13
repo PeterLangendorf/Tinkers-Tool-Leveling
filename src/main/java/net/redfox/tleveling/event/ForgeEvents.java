@@ -141,7 +141,17 @@ public class ForgeEvents {
         }
 
         if (!ToolExp.RANGED_DAMAGE_ENTITIES.contains(tool.getItem())) return;
-        ToolExp.addExpToTool(player, tool, 5 * TinkersLevelingCommonConfigs.KILL_EXP_MULTIPLIER.get());
+
+        Double exp = -1d;
+        if (TinkersLevelingCommonConfigs.ENABLE_CUSTOM_EXP.get()) {
+          String target = ((EntityHitResult) event.getRayTraceResult()).getEntity().getEncodeId();
+          exp = ToolExp.MELEE_EXPERIENCE.getOrDefault(target, -1d);
+          if (exp == 0) return;
+        }
+
+        if (exp == -1d) exp = TinkersLevelingCommonConfigs.BASE_EXPERIENCE_GAIN.get();
+
+        ToolExp.addExpToTool(player, tool, exp * TinkersLevelingCommonConfigs.KILL_EXP_MULTIPLIER.get());
       }
     }
   }

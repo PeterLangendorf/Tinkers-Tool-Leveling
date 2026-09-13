@@ -243,7 +243,7 @@ public class JsonConfigReader {
   }
 
   private static String getFilePathAsString(String filePath) {
-    return FMLPaths.CONFIGDIR.get().resolve(TinkersLeveling.MOD_ID + "/" + filePath + ".json").toString();
+    return FMLPaths.CONFIGDIR.get().resolve(TinkersLeveling.MOD_ID+TinkersLeveling.VERSION + "/" + filePath + ".json").toString();
   }
 
   public static class JsonObjectBuilder {
