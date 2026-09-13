@@ -119,6 +119,20 @@ public class JsonConfigReader {
           new JsonObjectBuilder().add("modifier", "tconstruct:punch").add("weight", 2).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your projectiles seem like they would pack a punch... (+1 punch)").build(),
           new JsonObjectBuilder().add("modifier", "tconstruct:quick_charge").add("weight", 4).add("max", 4).add("exceptions", createJsonArray()).add("message", "Your crossbow seems especially easy to charge... (+1 quick_charge)").build()
       )).build(),
+      new JsonObjectBuilder().add("item", "tconstruct:javelin").add("source", createJsonArray("tleveling:damage_entity", "tleveling:ranged_damage_entity")).add("modifiers", createJsonArray(
+          new JsonObjectBuilder().add("modifier", "tconstruct:experienced").add("weight", 4).add("max", 5).add("exceptions", createJsonArray()).add("message", "You sense a magical aura surround your tool... (+1 experienced)").build(),
+          new JsonObjectBuilder().add("modifier", "tconstruct:reinforced").add("weight", 5).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool seems much more durable now... (+1 reinforced)").build(),
+          new JsonObjectBuilder().add("modifier", "tconstruct:fiery").add("weight", 3).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool feels much warmer than it was before... (+1 fiery)").build(),
+          new JsonObjectBuilder().add("modifier", "tconstruct:knockback").add("weight", 2).add("max", 5).add("exceptions", createJsonArray()).add("message", "You feel your tool become more forceful... (+1 knockback)").build(),
+          new JsonObjectBuilder().add("modifier", "tconstruct:necrotic").add("weight", 3).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your javelin feels oddly rotten... (+1 necrotic)").build(),
+          new JsonObjectBuilder().add("modifier", "tconstruct:severing").add("weight", 3).add("max", 3).add("exceptions", createJsonArray()).add("message", "You feel your tool become much sharper than before... (+1 severing)").build(),
+          new JsonObjectBuilder().add("modifier", "tconstruct:pierce").add("weight", 2).add("max", 3).add("exceptions", createJsonArray()).add("message", "You feel your tool become very pointy... (+1 pierce)").build(),
+          new JsonObjectBuilder().add("modifier", "tconstruct:sharpness").add("weight", 5).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool has become much more deadly... (+1 sharpness)").build(),
+          new JsonObjectBuilder().add("modifier", "tconstruct:smite").add("weight", 4).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool sends the undead running... (+1 smite)").build(),
+          new JsonObjectBuilder().add("modifier", "tconstruct:swiftstrike").add("weight", 2).add("max", 5).add("exceptions", createJsonArray()).add("message", "You feel your tool become much lighter and faster... (+1 swiftstrike)").build(),
+          new JsonObjectBuilder().add("modifier", "tconstruct:trueshot").add("weight", 3).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your javelin flies straighter and truer... (+1 trueshot)").build(),
+          new JsonObjectBuilder().add("modifier", "tconstruct:quick_charge").add("weight", 3).add("max", 4).add("exceptions", createJsonArray()).add("message", "Your javelin feels much lighter to throw... (+1 quick charge)").build()
+      )).build(),
       new JsonObjectBuilder().add("item", "tconstruct:plate_helmet").add("source", createJsonArray("tleveling:take_damage")).add("modifiers", createJsonArray(
           new JsonObjectBuilder().add("modifier", "tconstruct:reinforced").add("weight", 3).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool seems much more durable now... (+1 reinforced)").build(),
           new JsonObjectBuilder().add("modifier", "tconstruct:thorns").add("weight", 1).add("max", 3).add("exceptions", createJsonArray()).add("message", "Your armor has become very spikey... (+1 thorns)").build(),

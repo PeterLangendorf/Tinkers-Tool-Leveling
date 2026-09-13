@@ -7,7 +7,6 @@ That being said, this mod grants your tool a random modifier upon leveling up. E
 **CUSTOMIZATION**
 
 This mod is centralized around customization -- nearly every feature can be customized. Using the folder in the standard config folder, you can change which tools have exp, how they gain it, which modifiers they gain, and how long it takes to level up.
-Please note that if you are trying to add a new tool to the leveling system, you will have to add it to the \#tleveling:levelable tag via something like [KubeJS](https://kubejs.com/) or a datapack.
 
 **FEATURES**
 

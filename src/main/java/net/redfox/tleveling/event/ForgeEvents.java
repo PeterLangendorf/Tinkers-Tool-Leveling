@@ -6,6 +6,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ToolActions;
@@ -29,6 +30,7 @@ import net.redfox.tleveling.leveling.ToolExp;
 import net.redfox.tleveling.leveling.TooltipDisplay;
 import net.redfox.tleveling.util.ModKeybinds;
 import slimeknights.tconstruct.library.events.TinkerToolEvent;
+import slimeknights.tconstruct.tools.entity.ThrownTool;
 
 public class ForgeEvents {
   private static boolean skip = false;
@@ -80,20 +82,21 @@ public class ForgeEvents {
     }
     @SubscribeEvent
     public static void onLivingEntityHurt(LivingHurtEvent event) {
-      if (event.getAmount() <= 0) return;
+      float amount = Math.min(100, event.getAmount());
+      if (amount <= 0) return;
       if (event.getEntity().level().isClientSide()) return;
       if (event.getEntity() instanceof Player player) {
         if (ToolExp.TAKE_DAMAGES.contains(player.getItemBySlot(EquipmentSlot.HEAD).getItem())) {
-          ToolExp.addExpToTool(player, player.getItemBySlot(EquipmentSlot.HEAD), event.getAmount() * TinkersLevelingCommonConfigs.ARMOR_EXP_MULTIPLIER.get());
+          ToolExp.addExpToTool(player, player.getItemBySlot(EquipmentSlot.HEAD), amount * TinkersLevelingCommonConfigs.ARMOR_EXP_MULTIPLIER.get());
         }
         if (ToolExp.TAKE_DAMAGES.contains(player.getItemBySlot(EquipmentSlot.CHEST).getItem())) {
-          ToolExp.addExpToTool(player, player.getItemBySlot(EquipmentSlot.CHEST), event.getAmount() * TinkersLevelingCommonConfigs.ARMOR_EXP_MULTIPLIER.get());
+          ToolExp.addExpToTool(player, player.getItemBySlot(EquipmentSlot.CHEST), amount * TinkersLevelingCommonConfigs.ARMOR_EXP_MULTIPLIER.get());
         }
         if (ToolExp.TAKE_DAMAGES.contains(player.getItemBySlot(EquipmentSlot.LEGS).getItem())) {
-          ToolExp.addExpToTool(player, player.getItemBySlot(EquipmentSlot.LEGS), event.getAmount() * TinkersLevelingCommonConfigs.ARMOR_EXP_MULTIPLIER.get());
+          ToolExp.addExpToTool(player, player.getItemBySlot(EquipmentSlot.LEGS), amount * TinkersLevelingCommonConfigs.ARMOR_EXP_MULTIPLIER.get());
         }
         if (ToolExp.TAKE_DAMAGES.contains(player.getItemBySlot(EquipmentSlot.FEET).getItem())) {
-          ToolExp.addExpToTool(player, player.getItemBySlot(EquipmentSlot.FEET), event.getAmount() * TinkersLevelingCommonConfigs.ARMOR_EXP_MULTIPLIER.get());
+          ToolExp.addExpToTool(player, player.getItemBySlot(EquipmentSlot.FEET), amount * TinkersLevelingCommonConfigs.ARMOR_EXP_MULTIPLIER.get());
         }
       }
     }
@@ -132,17 +135,13 @@ public class ForgeEvents {
       if (!event.getRayTraceResult().getType().equals(HitResult.Type.ENTITY)) return;
 
       if (event.getProjectile().getOwner() instanceof Player player) {
-        if (!ToolExp.RANGED_DAMAGE_ENTITIES.contains(player.getMainHandItem().getItem())) return;
-
-        Double exp = -1d;
-        if (TinkersLevelingCommonConfigs.ENABLE_CUSTOM_EXP.get()) {
-          String target = ((EntityHitResult) event.getRayTraceResult()).getEntity().getEncodeId();
-          exp = ToolExp.MELEE_EXPERIENCE.getOrDefault(target, -1d);
-          if (exp == 0) return;
+        ItemStack tool = player.getMainHandItem();
+        if (event.getProjectile() instanceof ThrownTool thrownTool && tool.getItem() != thrownTool.getDisplayTool().getItem()) {
+          tool = thrownTool.getDisplayTool();
         }
 
-        if (exp == -1d) exp = TinkersLevelingCommonConfigs.BASE_EXPERIENCE_GAIN.get();
-        ToolExp.addExpToTool(player, player.getMainHandItem(), exp * TinkersLevelingCommonConfigs.KILL_EXP_MULTIPLIER.get());
+        if (!ToolExp.RANGED_DAMAGE_ENTITIES.contains(tool.getItem())) return;
+        ToolExp.addExpToTool(player, tool, 5 * TinkersLevelingCommonConfigs.KILL_EXP_MULTIPLIER.get());
       }
     }
   }
