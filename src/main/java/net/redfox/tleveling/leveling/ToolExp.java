@@ -21,15 +21,14 @@ import slimeknights.tconstruct.library.modifiers.ModifierId;
 import slimeknights.tconstruct.library.tools.SlotType;
 import slimeknights.tconstruct.library.tools.nbt.ToolStack;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 public class ToolExp {
   private static final double EXPONENTIAL_INCREASE = TinkersLevelingCommonConfigs.LEVELUP_INCREASE.get();
   private static final double FIRST_LEVEL_EXP_REQUIREMENT = TinkersLevelingCommonConfigs.LEVELUP_EXP_REQUIRED.get();
 
   private static final JsonArray MODIFIERS = JsonConfigReader.getOrCreateJsonFile("modifiers", JsonConfigReader.MODIFIERS).getAsJsonArray("values");
+  private static final JsonArray CUSTOM_EXPERIENCE = JsonConfigReader.getOrCreateJsonFile("custom_experience", JsonConfigReader.CUSTOM_EXPERIENCE).getAsJsonArray("values");
 
   public static final List<Item> BREAK_BLOCKS = new ArrayList<>();
   public static final List<Item> DAMAGE_ENTITIES = new ArrayList<>();
@@ -37,6 +36,9 @@ public class ToolExp {
   public static final List<Item> TILLS = new ArrayList<>();
   public static final List<Item> SHEARS = new ArrayList<>();
   public static final List<Item> TAKE_DAMAGES = new ArrayList<>();
+  public static final Map<ResourceLocation, Double> BLOCK_EXPERIENCE = new HashMap<>();
+  public static final Map<String, Double> MELEE_EXPERIENCE = new HashMap<>();
+  public static final Map<String, Double> RANGED_EXPERIENCE = new HashMap<>();
 
   public static void init() {
     for (JsonElement element : MODIFIERS) {
@@ -49,6 +51,39 @@ public class ToolExp {
           case "tleveling:till" -> TILLS.add(item);
           case "tleveling:shear" -> SHEARS.add(item);
           case "tleveling:take_damage" -> TAKE_DAMAGES.add(item);
+        }
+      }
+    }
+
+
+    for (JsonElement element : CUSTOM_EXPERIENCE) {
+      String event = element.getAsJsonObject().get("event").getAsString();
+      switch (event) {
+        case "tleveling:break_block" -> {
+          JsonArray tags = element.getAsJsonObject().get("tags").getAsJsonArray();
+          for (JsonElement pair : tags) {
+            String tag = pair.getAsJsonObject().get("tag").getAsString();
+            Double exp = pair.getAsJsonObject().get("exp").getAsDouble();
+            BLOCK_EXPERIENCE.put(ResourceLocation.parse(tag),exp);
+          }
+        }
+
+        case "tleveling:damage_entity" -> {
+          JsonArray entities = element.getAsJsonObject().get("entities").getAsJsonArray();
+          for (JsonElement pair : entities) {
+            String entity = pair.getAsJsonObject().get("entity").getAsString();
+            Double exp = pair.getAsJsonObject().get("exp").getAsDouble();
+            MELEE_EXPERIENCE.put(entity,exp);
+          }
+        }
+
+        case "tleveling:ranged_damage_entity" -> {
+          JsonArray entities = element.getAsJsonObject().get("entities").getAsJsonArray();
+          for (JsonElement pair : entities) {
+            String entity = pair.getAsJsonObject().get("entity").getAsString();
+            Double exp = pair.getAsJsonObject().get("exp").getAsDouble();
+            RANGED_EXPERIENCE.put(entity,exp);
+          }
         }
       }
     }

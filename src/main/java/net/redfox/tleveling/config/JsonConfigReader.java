@@ -157,6 +157,35 @@ public class JsonConfigReader {
       )).build()
   )));
 
+  public static final Runnable CUSTOM_EXPERIENCE = () -> writeJsonFile(getFilePathAsString("custom_experience"), createDefaultJsonObject(createJsonArray(
+          new JsonObjectBuilder()
+                  .add("event","tleveling:break_block")
+                  .add("tags", createJsonArray(
+                          new JsonObjectBuilder()
+                                  .add("tag","example:example")
+                                  .add("exp", 5)
+                                  .build()
+                  )).build(),
+          new JsonObjectBuilder()
+                  .add("event", "tleveling:damage_entity")
+                  .add("entities", createJsonArray(
+                          new JsonObjectBuilder()
+                                  .add("entity","example:example")
+                                  .add("exp", 5)
+                                  .build()
+                  ))
+                  .build(),
+          new JsonObjectBuilder()
+                  .add("event", "tleveling:ranged_damage_entity")
+                  .add("entities", createJsonArray(
+                          new JsonObjectBuilder()
+                                  .add("entity","example:example")
+                                  .add("exp", 5)
+                                  .build()
+                  ))
+                  .build()
+  )));
+
   public static JsonObject getOrCreateJsonFile(String fileName, Runnable create) {
     if (!new File(getFilePathAsString(fileName)).exists())
       create.run();

@@ -14,8 +14,9 @@ public class TinkersLevelingCommonConfigs {
   public static final ForgeConfigSpec.ConfigValue<Double> LEVELUP_INCREASE;
   public static final ForgeConfigSpec.ConfigValue<Double> RANDOMNESS_FACTOR;
   public static final ForgeConfigSpec.ConfigValue<Double> EXP_LOSS_ON_REPLACE;
-
+  public static final ForgeConfigSpec.ConfigValue<Double> BASE_EXPERIENCE_GAIN;
   public static final ForgeConfigSpec.ConfigValue<Integer> LEVEL_BONUS_MODIFIER;
+  public static final ForgeConfigSpec.ConfigValue<Boolean> ENABLE_CUSTOM_EXP;
 
   static {
     BUILDER.push("Common Configs for Tinker's Tool Leveling");
@@ -42,6 +43,11 @@ public class TinkersLevelingCommonConfigs {
         .comment("A value of > 1 is what the exp will be divded by when a tool part is replaced")
             .comment("For example, a value of 2 means that if a tool has 50 exp it will have 25 exp after a part is replaced")
                 .defineInRange("expLossOnReplace", 2d, 0, Integer.MAX_VALUE);
+    BASE_EXPERIENCE_GAIN = BUILDER.comment("Base experience gain, from which other values modify or replace")
+                    .defineInRange("baseExpGain", 5d, 0, 100);
+    ENABLE_CUSTOM_EXP = BUILDER.comment("Enables custom experience values for certain actions.")
+            .comment("Customizable events and filters are found in \"config/tleveling/custom_experience\"")
+            .define("enableCustomExpValues",false);
 
     BUILDER.pop();
     SPEC = BUILDER.build();
