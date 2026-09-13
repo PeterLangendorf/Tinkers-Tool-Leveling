@@ -70,20 +70,21 @@ public class ForgeEvents {
     }
     @SubscribeEvent
     public static void onLivingEntityHurt(LivingHurtEvent event) {
-      if (event.getAmount() <= 0) return;
+      float amount = Math.min(100, event.getAmount());
+      if (amount <= 0) return;
       if (event.getEntity().level().isClientSide()) return;
       if (event.getEntity() instanceof Player player) {
         if (ToolExp.TAKE_DAMAGES.contains(player.getItemBySlot(EquipmentSlot.HEAD).getItem())) {
-          ToolExp.addExpToTool(player, player.getItemBySlot(EquipmentSlot.HEAD), event.getAmount() * TinkersLevelingCommonConfigs.ARMOR_EXP_MULTIPLIER.get());
+          ToolExp.addExpToTool(player, player.getItemBySlot(EquipmentSlot.HEAD), amount * TinkersLevelingCommonConfigs.ARMOR_EXP_MULTIPLIER.get());
         }
         if (ToolExp.TAKE_DAMAGES.contains(player.getItemBySlot(EquipmentSlot.CHEST).getItem())) {
-          ToolExp.addExpToTool(player, player.getItemBySlot(EquipmentSlot.CHEST), event.getAmount() * TinkersLevelingCommonConfigs.ARMOR_EXP_MULTIPLIER.get());
+          ToolExp.addExpToTool(player, player.getItemBySlot(EquipmentSlot.CHEST), amount * TinkersLevelingCommonConfigs.ARMOR_EXP_MULTIPLIER.get());
         }
         if (ToolExp.TAKE_DAMAGES.contains(player.getItemBySlot(EquipmentSlot.LEGS).getItem())) {
-          ToolExp.addExpToTool(player, player.getItemBySlot(EquipmentSlot.LEGS), event.getAmount() * TinkersLevelingCommonConfigs.ARMOR_EXP_MULTIPLIER.get());
+          ToolExp.addExpToTool(player, player.getItemBySlot(EquipmentSlot.LEGS), amount * TinkersLevelingCommonConfigs.ARMOR_EXP_MULTIPLIER.get());
         }
         if (ToolExp.TAKE_DAMAGES.contains(player.getItemBySlot(EquipmentSlot.FEET).getItem())) {
-          ToolExp.addExpToTool(player, player.getItemBySlot(EquipmentSlot.FEET), event.getAmount() * TinkersLevelingCommonConfigs.ARMOR_EXP_MULTIPLIER.get());
+          ToolExp.addExpToTool(player, player.getItemBySlot(EquipmentSlot.FEET), amount * TinkersLevelingCommonConfigs.ARMOR_EXP_MULTIPLIER.get());
         }
       }
     }
