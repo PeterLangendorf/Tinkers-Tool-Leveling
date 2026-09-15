@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 @Mod(TinkersLeveling.MOD_ID)
 public class TinkersLeveling {
 	public static final String MOD_ID = "tleveling";
-  public static final String VERSION = "-v1.2.0";
+  public static final String VERSION = "-v1.2.1";
 	public static final Logger LOGGER = LogUtils.getLogger();
 
 	public TinkersLeveling(FMLJavaModLoadingContext context) {

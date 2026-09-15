@@ -27,8 +27,8 @@ public class ToolExp {
   private static final double EXPONENTIAL_INCREASE = TinkersLevelingCommonConfigs.LEVELUP_INCREASE.get();
   private static final double FIRST_LEVEL_EXP_REQUIREMENT = TinkersLevelingCommonConfigs.LEVELUP_EXP_REQUIRED.get();
 
-  private static final JsonArray MODIFIERS = JsonConfigReader.getOrCreateJsonFile("modifiers", JsonConfigReader.MODIFIERS).getAsJsonArray("values");
-  private static final JsonArray CUSTOM_EXPERIENCE = JsonConfigReader.getOrCreateJsonFile("custom_experience", JsonConfigReader.CUSTOM_EXPERIENCE).getAsJsonArray("values");
+  private static final JsonArray MODIFIERS = JsonConfigReader.getOrCreateJsonDirectory("modifiers");
+  private static final JsonArray CUSTOM_EXPERIENCE = JsonConfigReader.getOrCreateJsonFile("custom_experience").getAsJsonArray("values");
 
   public static final List<Item> BREAK_BLOCKS = new ArrayList<>();
   public static final List<Item> DAMAGE_ENTITIES = new ArrayList<>();

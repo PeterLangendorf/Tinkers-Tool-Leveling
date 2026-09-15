@@ -12,184 +12,179 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class JsonConfigReader {
-  public static final Runnable MODIFIERS = () -> writeJsonFile(getFilePathAsString("modifiers"), createDefaultJsonObject(createJsonArray(
-      new JsonObjectBuilder().add("item", "tconstruct:pickaxe").add("source", createJsonArray("tleveling:break_block")).add("modifiers", createJsonArray(
-          new JsonObjectBuilder().add("modifier", "tconstruct:experienced").add("weight", 3).add("max", 5).add("exceptions", createJsonArray()).add("message", "You sense a magical aura surround your tool... (+1 experienced)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:magnetic").add("weight", 2).add("max", 5).add("exceptions", createJsonArray()).add("message", "You feel your tool pull you closer... (+1 magnetic)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:reinforced").add("weight", 5).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool seems much more durable now... (+1 reinforced)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:haste").add("weight", 5).add("max", 5).add("exceptions", createJsonArray()).add("message", "You feel the tool become lighter in your hands... (+1 haste)").build()
-      )).build(),
-      new JsonObjectBuilder().add("item", "tconstruct:sledge_hammer").add("source", createJsonArray("tleveling:break_block")).add("modifiers", createJsonArray(
-          new JsonObjectBuilder().add("modifier", "tconstruct:experienced").add("weight", 3).add("max", 5).add("exceptions", createJsonArray()).add("message", "You sense a magical aura surround your tool... (+1 experienced)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:magnetic").add("weight", 2).add("max", 5).add("exceptions", createJsonArray()).add("message", "You feel your tool pull you closer... (+1 magnetic)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:reinforced").add("weight", 5).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool seems much more durable now... (+1 reinforced)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:haste").add("weight", 5).add("max", 5).add("exceptions", createJsonArray()).add("message", "You feel the tool become lighter in your hands... (+1 haste)").build()
-      )).build(),
-      new JsonObjectBuilder().add("item", "tconstruct:vein_hammer").add("source", createJsonArray("tleveling:break_block")).add("modifiers", createJsonArray(
-          new JsonObjectBuilder().add("modifier", "tconstruct:experienced").add("weight", 3).add("max", 5).add("exceptions", createJsonArray()).add("message", "You sense a magical aura surround your tool... (+1 experienced)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:magnetic").add("weight", 2).add("max", 5).add("exceptions", createJsonArray()).add("message", "You feel your tool pull you closer... (+1 magnetic)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:reinforced").add("weight", 5).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool seems much more durable now... (+1 reinforced)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:haste").add("weight", 5).add("max", 5).add("exceptions", createJsonArray()).add("message", "You feel the tool become lighter in your hands... (+1 haste)").build()
-      )).build(),
-      new JsonObjectBuilder().add("item", "tconstruct:mattock").add("source", createJsonArray("tleveling:break_block")).add("modifiers", createJsonArray(
-          new JsonObjectBuilder().add("modifier", "tconstruct:magnetic").add("weight", 2).add("max", 5).add("exceptions", createJsonArray()).add("message", "You feel your tool pull you closer... (+1 magnetic)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:reinforced").add("weight", 5).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool seems much more durable now... (+1 reinforced)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:haste").add("weight", 5).add("max", 5).add("exceptions", createJsonArray()).add("message", "You feel the tool become lighter in your hands... (+1 haste)").build()
-      )).build(),
-      new JsonObjectBuilder().add("item", "tconstruct:pickadze").add("source", createJsonArray("tleveling:break_block")).add("modifiers", createJsonArray(
-          new JsonObjectBuilder().add("modifier", "tconstruct:magnetic").add("weight", 2).add("max", 5).add("exceptions", createJsonArray()).add("message", "You feel your tool pull you closer... (+1 magnetic)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:reinforced").add("weight", 5).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool seems much more durable now... (+1 reinforced)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:haste").add("weight", 5).add("max", 5).add("exceptions", createJsonArray()).add("message", "You feel the tool become lighter in your hands... (+1 haste)").build()
-      )).build(),
-      new JsonObjectBuilder().add("item", "tconstruct:excavator").add("source", createJsonArray("tleveling:break_block")).add("modifiers", createJsonArray(
-          new JsonObjectBuilder().add("modifier", "tconstruct:magnetic").add("weight", 2).add("max", 5).add("exceptions", createJsonArray()).add("message", "You feel your tool pull you closer... (+1 magnetic)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:reinforced").add("weight", 5).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool seems much more durable now... (+1 reinforced)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:haste").add("weight", 5).add("max", 5).add("exceptions", createJsonArray()).add("message", "You feel the tool become lighter in your hands... (+1 haste)").build()
-      )).build(),
-      new JsonObjectBuilder().add("item", "tconstruct:hand_axe").add("source", createJsonArray("tleveling:damage_entity", "tleveling:break_block")).add("modifiers", createJsonArray(
-          new JsonObjectBuilder().add("modifier", "tconstruct:magnetic").add("weight", 2).add("max", 5).add("exceptions", createJsonArray()).add("message", "You feel your tool pull you closer... (+1 magnetic)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:reinforced").add("weight", 5).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool seems much more durable now... (+1 reinforced)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:haste").add("weight", 5).add("max", 5).add("exceptions", createJsonArray()).add("message", "You feel the tool become lighter in your hands... (+1 haste)").build()
-      )).build(),
-      new JsonObjectBuilder().add("item", "tconstruct:broad_axe").add("source", createJsonArray("tleveling:damage_entity", "tleveling:break_block")).add("modifiers", createJsonArray(
-          new JsonObjectBuilder().add("modifier", "tconstruct:magnetic").add("weight", 2).add("max", 5).add("exceptions", createJsonArray()).add("message", "You feel your tool pull you closer... (+1 magnetic)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:reinforced").add("weight", 5).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool seems much more durable now... (+1 reinforced)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:haste").add("weight", 5).add("max", 5).add("exceptions", createJsonArray()).add("message", "You feel the tool become lighter in your hands... (+1 haste)").build()
-      )).build(),
-      new JsonObjectBuilder().add("item", "tconstruct:kama").add("source", createJsonArray("tleveling:break_block", "tleveling:till", "tleveling:shear")).add("modifiers", createJsonArray(
-          new JsonObjectBuilder().add("modifier", "tconstruct:magnetic").add("weight", 1).add("max", 5).add("exceptions", createJsonArray()).add("message", "You feel your tool pull you closer... (+1 magnetic)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:reinforced").add("weight", 1).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool seems much more durable now... (+1 reinforced)").build()
-      )).build(),
-      new JsonObjectBuilder().add("item", "tconstruct:scythe").add("source", createJsonArray("tleveling:break_block", "tleveling:till", "tleveling:shear")).add("modifiers", createJsonArray(
-          new JsonObjectBuilder().add("modifier", "tconstruct:magnetic").add("weight", 1).add("max", 5).add("exceptions", createJsonArray()).add("message", "You feel your tool pull you closer... (+1 magnetic)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:reinforced").add("weight", 1).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool seems much more durable now... (+1 reinforced)").build()
-      )).build(),
-      new JsonObjectBuilder().add("item", "tconstruct:dagger").add("source", createJsonArray("tleveling:damage_entity")).add("modifiers", createJsonArray(
-          new JsonObjectBuilder().add("modifier", "tconstruct:experienced").add("weight", 4).add("max", 5).add("exceptions", createJsonArray()).add("message", "You sense a magical aura surround your tool... (+1 experienced)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:reinforced").add("weight", 5).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool seems much more durable now... (+1 reinforced)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:fiery").add("weight", 3).add("max", 5).add("exceptions", createJsonArray()).add("message", "You tool feels much warmer than it was before... (+1 fiery)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:knockback").add("weight", 2).add("max", 5).add("exceptions", createJsonArray()).add("message", "You feel your tool become more forceful... (+1 knockback)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:necrotic").add("weight", 3).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your sword feels oddly rotten... (+1 necrotic)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:severing").add("weight", 3).add("max", 3).add("exceptions", createJsonArray()).add("message", "You feel your tool become much sharper than before... (+1 severing)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:sweeping_edge").add("weight", 3).add("max", 3).add("exceptions", createJsonArray()).add("message", "You tool whistles through the air as it strikes... (+1 sweeping)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:pierce").add("weight", 2).add("max", 3).add("exceptions", createJsonArray()).add("message", "You feel your tool become very pointy... (+1 pierce)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:sharpness").add("weight", 5).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool has become much more deadly... (+1 sharpness)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:smite").add("weight", 4).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool sends the undead running... (+1 smite)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:swiftstrike").add("weight", 2).add("max", 5).add("exceptions", createJsonArray()).add("message", "You feel your tool become much lighter and faster... (+1 swiftstrike)").build()
-      )).build(),
-      new JsonObjectBuilder().add("item", "tconstruct:sword").add("source", createJsonArray("tleveling:damage_entity")).add("modifiers", createJsonArray(
-          new JsonObjectBuilder().add("modifier", "tconstruct:experienced").add("weight", 4).add("max", 5).add("exceptions", createJsonArray()).add("message", "You sense a magical aura surround your tool... (+1 experienced)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:reinforced").add("weight", 5).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool seems much more durable now... (+1 reinforced)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:fiery").add("weight", 3).add("max", 5).add("exceptions", createJsonArray()).add("message", "You tool feels much warmer than it was before... (+1 fiery)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:knockback").add("weight", 2).add("max", 5).add("exceptions", createJsonArray()).add("message", "You feel your tool become more forceful... (+1 knockback)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:necrotic").add("weight", 3).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your sword feels oddly rotten... (+1 necrotic)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:severing").add("weight", 3).add("max", 3).add("exceptions", createJsonArray()).add("message", "You feel your tool become much sharper than before... (+1 severing)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:sweeping_edge").add("weight", 3).add("max", 3).add("exceptions", createJsonArray()).add("message", "You tool whistles through the air as it strikes... (+1 sweeping)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:pierce").add("weight", 2).add("max", 3).add("exceptions", createJsonArray()).add("message", "You feel your tool become very pointy... (+1 pierce)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:sharpness").add("weight", 5).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool has become much more deadly... (+1 sharpness)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:smite").add("weight", 4).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool sends the undead running... (+1 smite)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:swiftstrike").add("weight", 2).add("max", 5).add("exceptions", createJsonArray()).add("message", "You feel your tool become much lighter and faster... (+1 swiftstrike)").build()
-      )).build(),
-      new JsonObjectBuilder().add("item", "tconstruct:cleaver").add("source", createJsonArray("tleveling:damage_entity")).add("modifiers", createJsonArray(
-          new JsonObjectBuilder().add("modifier", "tconstruct:experienced").add("weight", 4).add("max", 5).add("exceptions", createJsonArray()).add("message", "You sense a magical aura surround your tool... (+1 experienced)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:reinforced").add("weight", 5).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool seems much more durable now... (+1 reinforced)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:fiery").add("weight", 3).add("max", 5).add("exceptions", createJsonArray()).add("message", "You tool feels much warmer than it was before... (+1 fiery)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:knockback").add("weight", 2).add("max", 5).add("exceptions", createJsonArray()).add("message", "You feel your tool become more forceful... (+1 knockback)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:necrotic").add("weight", 3).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your sword feels oddly rotten... (+1 necrotic)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:severing").add("weight", 3).add("max", 3).add("exceptions", createJsonArray()).add("message", "You feel your tool become much sharper than before... (+1 severing)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:sweeping_edge").add("weight", 3).add("max", 3).add("exceptions", createJsonArray()).add("message", "You tool whistles through the air as it strikes... (+1 sweeping)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:pierce").add("weight", 2).add("max", 3).add("exceptions", createJsonArray()).add("message", "You feel your tool become very pointy... (+1 pierce)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:sharpness").add("weight", 5).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool has become much more deadly... (+1 sharpness)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:smite").add("weight", 4).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool sends the undead running... (+1 smite)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:swiftstrike").add("weight", 2).add("max", 5).add("exceptions", createJsonArray()).add("message", "You feel your tool become much lighter and faster... (+1 swiftstrike)").build()
-      )).build(),
-      new JsonObjectBuilder().add("item", "tconstruct:crossbow").add("source", createJsonArray("tleveling:ranged_damage_entity")).add("modifiers", createJsonArray(
-          new JsonObjectBuilder().add("modifier", "tconstruct:reinforced").add("weight", 4).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool seems much more durable now... (+1 reinforced)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:power").add("weight", 5).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your projectiles seem especially powerful... (+1 power)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:punch").add("weight", 2).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your projectiles seem like they would pack a punch... (+1 punch)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:quick_charge").add("weight", 4).add("max", 4).add("exceptions", createJsonArray()).add("message", "Your crossbow seems especially easy to charge... (+1 quick_charge)").build()
-      )).build(),
-      new JsonObjectBuilder().add("item", "tconstruct:longbow").add("source", createJsonArray("tleveling:ranged_damage_entity")).add("modifiers", createJsonArray(
-          new JsonObjectBuilder().add("modifier", "tconstruct:reinforced").add("weight", 4).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool seems much more durable now... (+1 reinforced)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:power").add("weight", 5).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your projectiles seem especially powerful... (+1 power)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:punch").add("weight", 2).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your projectiles seem like they would pack a punch... (+1 punch)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:quick_charge").add("weight", 4).add("max", 4).add("exceptions", createJsonArray()).add("message", "Your crossbow seems especially easy to charge... (+1 quick_charge)").build()
-      )).build(),
-      new JsonObjectBuilder().add("item", "tconstruct:javelin").add("source", createJsonArray("tleveling:damage_entity", "tleveling:ranged_damage_entity")).add("modifiers", createJsonArray(
-          new JsonObjectBuilder().add("modifier", "tconstruct:experienced").add("weight", 4).add("max", 5).add("exceptions", createJsonArray()).add("message", "You sense a magical aura surround your tool... (+1 experienced)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:reinforced").add("weight", 5).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool seems much more durable now... (+1 reinforced)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:fiery").add("weight", 3).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool feels much warmer than it was before... (+1 fiery)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:knockback").add("weight", 2).add("max", 5).add("exceptions", createJsonArray()).add("message", "You feel your tool become more forceful... (+1 knockback)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:necrotic").add("weight", 3).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your javelin feels oddly rotten... (+1 necrotic)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:severing").add("weight", 3).add("max", 3).add("exceptions", createJsonArray()).add("message", "You feel your tool become much sharper than before... (+1 severing)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:pierce").add("weight", 2).add("max", 3).add("exceptions", createJsonArray()).add("message", "You feel your tool become very pointy... (+1 pierce)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:sharpness").add("weight", 5).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool has become much more deadly... (+1 sharpness)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:smite").add("weight", 4).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool sends the undead running... (+1 smite)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:swiftstrike").add("weight", 2).add("max", 5).add("exceptions", createJsonArray()).add("message", "You feel your tool become much lighter and faster... (+1 swiftstrike)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:trueshot").add("weight", 3).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your javelin flies straighter and truer... (+1 trueshot)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:quick_charge").add("weight", 3).add("max", 4).add("exceptions", createJsonArray()).add("message", "Your javelin feels much lighter to throw... (+1 quick charge)").build()
-      )).build(),
-      new JsonObjectBuilder().add("item", "tconstruct:plate_helmet").add("source", createJsonArray("tleveling:take_damage")).add("modifiers", createJsonArray(
-          new JsonObjectBuilder().add("modifier", "tconstruct:reinforced").add("weight", 3).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool seems much more durable now... (+1 reinforced)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:thorns").add("weight", 1).add("max", 3).add("exceptions", createJsonArray()).add("message", "Your armor has become very spikey... (+1 thorns)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:respiration").add("weight", 3).add("max", 3).add("exceptions", createJsonArray()).add("message", "You find it strangely easy to breathe in your armor... (+1 respiration)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:protection").add("weight", 5).add("max", 3).add("exceptions", createJsonArray()).add("message", "Your feel much safer in your armor now... (+1 protection)").build()
-      )).build(),
-      new JsonObjectBuilder().add("item", "tconstruct:plate_chestplate").add("source", createJsonArray("tleveling:take_damage")).add("modifiers", createJsonArray(
-          new JsonObjectBuilder().add("modifier", "tconstruct:reinforced").add("weight", 3).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool seems much more durable now... (+1 reinforced)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:thorns").add("weight", 1).add("max", 3).add("exceptions", createJsonArray()).add("message", "Your armor has become very spikey... (+1 thorns)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:protection").add("weight", 5).add("max", 3).add("exceptions", createJsonArray()).add("message", "Your feel much safer in your armor now... (+1 protection)").build()
-      )).build(),
-      new JsonObjectBuilder().add("item", "tconstruct:plate_leggings").add("source", createJsonArray("tleveling:take_damage")).add("modifiers", createJsonArray(
-          new JsonObjectBuilder().add("modifier", "tconstruct:reinforced").add("weight", 3).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool seems much more durable now... (+1 reinforced)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:thorns").add("weight", 1).add("max", 3).add("exceptions", createJsonArray()).add("message", "Your armor has become very spikey... (+1 thorns)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:protection").add("weight", 5).add("max", 3).add("exceptions", createJsonArray()).add("message", "Your feel much safer in your armor now... (+1 protection)").build()
-      )).build(),
-      new JsonObjectBuilder().add("item", "tconstruct:plate_boots").add("source", createJsonArray("tleveling:take_damage")).add("modifiers", createJsonArray(
-          new JsonObjectBuilder().add("modifier", "tconstruct:reinforced").add("weight", 3).add("max", 5).add("exceptions", createJsonArray()).add("message", "Your tool seems much more durable now... (+1 reinforced)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:thorns").add("weight", 1).add("max", 3).add("exceptions", createJsonArray()).add("message", "Your armor has become very spikey... (+1 thorns)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:feather_falling").add("weight", 3).add("max", 4).add("exceptions", createJsonArray()).add("message", "Your boots feel as light as a feather... (+1 feather falling)").build(),
-          new JsonObjectBuilder().add("modifier", "tconstruct:protection").add("weight", 5).add("max", 3).add("exceptions", createJsonArray()).add("message", "Your feel much safer in your armor now... (+1 protection)").build()
-      )).build()
-  )));
-
-  public static final Runnable CUSTOM_EXPERIENCE = () -> writeJsonFile(getFilePathAsString("custom_experience"), createDefaultJsonObject(createJsonArray(
-          new JsonObjectBuilder()
-                  .add("event","tleveling:break_block")
-                  .add("tags", createJsonArray(
-                          new JsonObjectBuilder()
-                                  .add("tag","example:example")
-                                  .add("exp", 5)
-                                  .build()
-                  )).build(),
-          new JsonObjectBuilder()
-                  .add("event", "tleveling:damage_entity")
-                  .add("entities", createJsonArray(
-                          new JsonObjectBuilder()
-                                  .add("entity","example:example")
-                                  .add("exp", 5)
-                                  .build()
-                  ))
-                  .build(),
-          new JsonObjectBuilder()
-                  .add("event", "tleveling:ranged_damage_entity")
-                  .add("entities", createJsonArray(
-                          new JsonObjectBuilder()
-                                  .add("entity","example:example")
-                                  .add("exp", 5)
-                                  .build()
-                  ))
-                  .build()
-  )));
-
-  public static JsonObject getOrCreateJsonFile(String fileName, Runnable create) {
-    if (!new File(getFilePathAsString(fileName)).exists())
-      create.run();
+  public static JsonObject getOrCreateJsonFile(String fileName) {
+    ensureLegacyFoldersMigrated();
+    if (!new File(getFilePathAsString(fileName)).exists()) {
+      writeJsonFile(getFilePathAsString(fileName), readDefaultResource(fileName));
+    }
     return readJsonFile(fileName);
+  }
+
+  public static JsonArray getOrCreateJsonDirectory(String directoryName) {
+    ensureLegacyFoldersMigrated();
+
+    File directory = new File(getDirectoryPathAsString(directoryName));
+    List<File> files = collectJsonFiles(directory);
+    if (files.isEmpty()) {
+      writeItemJsonFiles(directoryName, readDefaultResource(directoryName).getAsJsonArray("values"));
+      files = collectJsonFiles(directory);
+    }
+
+    JsonArray merged = new JsonArray();
+    files.sort(Comparator.comparing(File::getPath));
+    for (File file : files) {
+      JsonObject json = readJsonFile(file);
+      if (json != null && json.has("values")) {
+        merged.addAll(json.getAsJsonArray("values"));
+      }
+    }
+    return merged;
+  }
+
+  private static JsonObject readDefaultResource(String name) {
+    String resourcePath = "/data/tleveling/leveling/" + name + ".json";
+    try (InputStream stream = JsonConfigReader.class.getResourceAsStream(resourcePath)) {
+      if (stream == null) {
+        throw new IllegalStateException("Missing bundled default resource: " + resourcePath);
+      }
+      try (InputStreamReader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
+        return new Gson().fromJson(reader, JsonObject.class);
+      }
+    } catch (IOException e) {
+      throw new IllegalStateException("Failed to read bundled default resource: " + resourcePath, e);
+    }
+  }
+
+  private static List<File> collectJsonFiles(File directory) {
+    List<File> result = new ArrayList<>();
+    File[] children = directory.isDirectory() ? directory.listFiles() : null;
+    if (children == null) return result;
+    for (File child : children) {
+      if (child.isDirectory()) {
+        result.addAll(collectJsonFiles(child));
+      } else if (child.getName().endsWith(".json")) {
+        result.add(child);
+      }
+    }
+    return result;
+  }
+
+  private static boolean legacyFoldersMigrated = false;
+
+  private static void ensureLegacyFoldersMigrated() {
+    if (legacyFoldersMigrated) return;
+    legacyFoldersMigrated = true;
+
+    File configDir = FMLPaths.CONFIGDIR.get().toFile();
+    String currentFolderName = getModDirectory().getName();
+    File[] siblings = configDir.listFiles(File::isDirectory);
+    if (siblings == null) return;
+
+    List<File> legacyDirs = new ArrayList<>();
+    for (File sibling : siblings) {
+      String name = sibling.getName();
+      if (name.equals(currentFolderName)) continue;
+      if (name.equals(TinkersLeveling.MOD_ID) || name.startsWith(TinkersLeveling.MOD_ID + "-v")) {
+        legacyDirs.add(sibling);
+      }
+    }
+
+    // Most recently used legacy folder first, so its values win over an even older folder's for the same item.
+    legacyDirs.sort(Comparator.comparingLong(File::lastModified).reversed());
+    for (File legacyDir : legacyDirs) {
+      migrateLegacyConfigFolder(legacyDir);
+    }
+  }
+
+  private static void migrateLegacyConfigFolder(File legacyDir) {
+    File[] children = legacyDir.listFiles();
+    if (children != null) {
+      for (File child : children) {
+        if (child.getName().equals("modifiers") || child.getName().equals("modifiers.json")) {
+          migrateLegacyModifiersSource(child);
+        } else {
+          copyMissingRecursively(child, new File(getModDirectory(), child.getName()));
+        }
+      }
+    }
+
+    deleteRecursively(legacyDir);
+    TinkersLeveling.LOGGER.info("Migrated legacy config folder '{}' into '{}' and removed it", legacyDir.getName(), getModDirectory().getName());
+  }
+
+  private static void migrateLegacyModifiersSource(File source) {
+    List<File> sourceFiles = source.isFile() ? List.of(source) : collectJsonFiles(source);
+    for (File file : sourceFiles) {
+      JsonObject json = readJsonFile(file);
+      if (json == null || !json.has("values")) continue;
+      for (JsonElement entry : json.getAsJsonArray("values")) {
+        String item = entry.getAsJsonObject().get("item").getAsString();
+        String[] namespaceAndPath = item.split(":", 2);
+        String namespace = namespaceAndPath[0];
+        String path = namespaceAndPath.length > 1 ? namespaceAndPath[1] : namespaceAndPath[0];
+
+        File target = new File(getFilePathAsString("modifiers/" + namespace + "/" + path));
+        if (!target.exists()) {
+          JsonArray wrapped = new JsonArray();
+          wrapped.add(entry);
+          writeJsonFile(target.getPath(), createDefaultJsonObject(wrapped));
+        }
+      }
+    }
+  }
+
+  private static void copyMissingRecursively(File source, File destination) {
+    if (source.isDirectory()) {
+      File[] children = source.listFiles();
+      if (children != null) {
+        for (File child : children) {
+          copyMissingRecursively(child, new File(destination, child.getName()));
+        }
+      }
+      return;
+    }
+
+    if (destination.exists()) return;
+    try {
+      if (destination.getParentFile() != null) {
+        destination.getParentFile().mkdirs();
+      }
+      Files.copy(source.toPath(), destination.toPath());
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  private static void deleteRecursively(File file) {
+    File[] children = file.listFiles();
+    if (children != null) {
+      for (File child : children) {
+        deleteRecursively(child);
+      }
+    }
+    file.delete();
+  }
+
+  private static void writeItemJsonFiles(String directoryName, JsonArray entries) {
+    for (JsonElement entry : entries) {
+      String item = entry.getAsJsonObject().get("item").getAsString();
+      String[] namespaceAndPath = item.split(":", 2);
+      String namespace = namespaceAndPath[0];
+      String path = namespaceAndPath.length > 1 ? namespaceAndPath[1] : namespaceAndPath[0];
+
+      JsonArray values = new JsonArray();
+      values.add(entry);
+      writeJsonFile(getFilePathAsString(directoryName + "/" + namespace + "/" + path), createDefaultJsonObject(values));
+    }
   }
 
   private static void writeJsonFile(String fileName, JsonObject jsonObject) {
@@ -210,7 +205,10 @@ public class JsonConfigReader {
   }
 
   private static JsonObject readJsonFile(String fileName) {
-    File file = new File(getFilePathAsString(fileName));
+    return readJsonFile(new File(getFilePathAsString(fileName)));
+  }
+
+  private static JsonObject readJsonFile(File file) {
     Gson gson = new Gson();
     try (FileReader reader = new FileReader(file)) {
       return gson.fromJson(reader, JsonObject.class);
@@ -226,57 +224,15 @@ public class JsonConfigReader {
     return jsonObject;
   }
 
-  private static JsonArray createJsonArray(JsonObject... jsonObjects) {
-    JsonArray jsonArray = new JsonArray();
-    for (JsonObject jsonObject : jsonObjects) {
-      jsonArray.add(jsonObject);
-    }
-    return jsonArray;
-  }
-  private static JsonArray createJsonArray(String first, String... strings) {
-    JsonArray jsonArray = new JsonArray();
-    for (String string : strings) {
-      jsonArray.add(string);
-    }
-    jsonArray.add(first);
-    return jsonArray;
+  private static File getModDirectory() {
+    return FMLPaths.CONFIGDIR.get().resolve(TinkersLeveling.MOD_ID + TinkersLeveling.VERSION).toFile();
   }
 
   private static String getFilePathAsString(String filePath) {
-    return FMLPaths.CONFIGDIR.get().resolve(TinkersLeveling.MOD_ID+TinkersLeveling.VERSION + "/" + filePath + ".json").toString();
+    return new File(getModDirectory(), filePath + ".json").getPath();
   }
 
-  public static class JsonObjectBuilder {
-    private final List<String> keys;
-    private final List<Object> values;
-
-    public JsonObjectBuilder() {
-      this.keys = new ArrayList<>();
-      this.values = new ArrayList<>();
-    }
-
-    public JsonObjectBuilder add(String key, Object value) {
-      this.keys.add(key);
-      this.values.add(value);
-      return this;
-    }
-
-    public JsonObject build() {
-      JsonObject jsonObject = new JsonObject();
-      for (int i = 0; i < this.keys.size(); i++) {
-        Object value = this.values.get(i);
-        if (value instanceof String s) {
-          jsonObject.addProperty(this.keys.get(i), s);
-        } else if (value instanceof Number n) {
-          jsonObject.addProperty(this.keys.get(i), n);
-        } else if (value instanceof Boolean b) {
-          jsonObject.addProperty(this.keys.get(i), b);
-        } else if (value instanceof JsonElement e) {
-          jsonObject.add(this.keys.get(i), e);
-        }
-      }
-
-      return jsonObject;
-    }
+  private static String getDirectoryPathAsString(String directoryPath) {
+    return new File(getModDirectory(), directoryPath).getPath();
   }
 }
