@@ -42,8 +42,13 @@ public class ToolExp {
 
   public static void init() {
     for (JsonElement element : MODIFIERS) {
+      ResourceLocation itemId = ResourceLocation.parse(element.getAsJsonObject().get("item").getAsString());
+      if (!ForgeRegistries.ITEMS.containsKey(itemId)) {
+        TinkersLeveling.LOGGER.warn("Skipped config entry for the unknown item '{}'", itemId);
+        continue;
+      }
+      Item item = ForgeRegistries.ITEMS.getValue(itemId);
       for (JsonElement source : element.getAsJsonObject().get("source").getAsJsonArray()) {
-        Item item = ForgeRegistries.ITEMS.getValue(ResourceLocation.parse(element.getAsJsonObject().get("item").getAsString()));
         switch (source.getAsString()) {
           case "tleveling:break_block" -> BREAK_BLOCKS.add(item);
           case "tleveling:damage_entity" -> DAMAGE_ENTITIES.add(item);
