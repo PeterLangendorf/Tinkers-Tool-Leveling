@@ -9,7 +9,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.redfox.tleveling.leveling.ToolExp;
-import net.redfox.tleveling.util.ModTags;
 
 public class LevelupCommand {
 	public LevelupCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -22,7 +21,7 @@ public class LevelupCommand {
 			return -1;
 		}
 		ItemStack stack = player.getMainHandItem();
-		if (!stack.is(ModTags.Items.LEVELABLE)) {
+		if (!ToolExp.isLevelableTool(stack.getItem())) {
 			source.sendFailure(Component.literal("This item cannot level up!"));
 			return -1;
 		}

@@ -1,0 +1,22 @@
+{
+  "values": [
+    {
+      "event": "tleveling:break_block",
+      "tags": [
+        {"tag": "example:example", "exp": 5}
+      ]
+    },
+    {
+      "event": "tleveling:damage_entity",
+      "entities": [
+        {"entity": "example:example", "exp": 5}
+      ]
+    },
+    {
+      "event": "tleveling:ranged_damage_entity",
+      "entities": [
+        {"entity": "example:example", "exp": 5}
+      ]
+    }
+  ]
+}

@@ -123,6 +123,18 @@ repositories {
      flatDir {
          dir 'libs'
      }
+    maven {
+        name 'DVS1 Maven FS'
+        url 'https://dvs1.progwml6.com/files/maven'
+    }
+    maven {
+        name = "MinecraftForge"
+        url = "https://maven.minecraftforge.net"
+    }
+    maven {
+        name = "ParchmentMC"
+        url = "https://maven.parchmentmc.org"
+    }
 }
 
 dependencies {

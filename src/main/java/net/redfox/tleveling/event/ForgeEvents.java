@@ -2,10 +2,15 @@ package net.redfox.tleveling.event;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.IForgeShearable;
 import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
@@ -13,6 +18,8 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.eventbus.api.Event;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.server.command.ConfigCommand;
@@ -26,8 +33,8 @@ import net.redfox.tleveling.config.TinkersLevelingCommonConfigs;
 import net.redfox.tleveling.leveling.ToolExp;
 import net.redfox.tleveling.leveling.TooltipDisplay;
 import net.redfox.tleveling.util.ModKeybinds;
-import net.redfox.tleveling.util.ModTags;
 import slimeknights.tconstruct.library.events.TinkerToolEvent;
+import slimeknights.tconstruct.tools.entity.ThrownTool;
 
 public class ForgeEvents {
   private static boolean skip = false;
@@ -35,9 +42,9 @@ public class ForgeEvents {
   public static class Client {
     @SubscribeEvent
     public static void onTooltipDisplay(ItemTooltipEvent event) {
-      if (!event.getItemStack().is(ModTags.Items.LEVELABLE)) return;
       if (event.getEntity() == null) return;
       if (event.getToolTip() == null || event.getToolTip().isEmpty()) return;
+      if (!ToolExp.isLevelableTool(event.getItemStack().getItem())) return;
 
       long window = Minecraft.getInstance().getWindow().getWindow();
       if (InputConstants.isKeyDown(window, InputConstants.KEY_LSHIFT) || InputConstants.isKeyDown(window, InputConstants.KEY_RSHIFT) || InputConstants.isKeyDown(window, InputConstants.KEY_LCONTROL) || InputConstants.isKeyDown(window, InputConstants.KEY_RCONTROL)) return;
@@ -66,25 +73,34 @@ public class ForgeEvents {
       if (event.getLevel().isClientSide()) return;
       if (isDuplicateEvent()) return;
       if (!ToolExp.BREAK_BLOCKS.contains(event.getPlayer().getMainHandItem().getItem())) return;
+      Double exp = -1d;
+      if (TinkersLevelingCommonConfigs.ENABLE_CUSTOM_EXP.get()) {
+        exp = event.getState().getTags().map(TagKey::location)
+                .map(rl -> ToolExp.BLOCK_EXPERIENCE.getOrDefault(rl, -1d))
+                .reduce(Double::max).orElse(0d);
+        if (exp == 0) return;
+      }
 
-      ToolExp.addExpToTool(event.getPlayer(), event.getPlayer().getMainHandItem(), 5* TinkersLevelingCommonConfigs.PICKAXE_EXP_MULTIPLIER.get());
+      if (exp == -1d) exp = TinkersLevelingCommonConfigs.BASE_EXPERIENCE_GAIN.get();
+      ToolExp.addExpToTool(event.getPlayer(), event.getPlayer().getMainHandItem(), exp * TinkersLevelingCommonConfigs.PICKAXE_EXP_MULTIPLIER.get());
     }
     @SubscribeEvent
     public static void onLivingEntityHurt(LivingHurtEvent event) {
-      if (event.getAmount() <= 0) return;
+      float amount = Math.min(100, event.getAmount());
+      if (amount <= 0) return;
       if (event.getEntity().level().isClientSide()) return;
       if (event.getEntity() instanceof Player player) {
         if (ToolExp.TAKE_DAMAGES.contains(player.getItemBySlot(EquipmentSlot.HEAD).getItem())) {
-          ToolExp.addExpToTool(player, player.getItemBySlot(EquipmentSlot.HEAD), event.getAmount() * TinkersLevelingCommonConfigs.ARMOR_EXP_MULTIPLIER.get());
+          ToolExp.addExpToTool(player, player.getItemBySlot(EquipmentSlot.HEAD), amount * TinkersLevelingCommonConfigs.ARMOR_EXP_MULTIPLIER.get());
         }
         if (ToolExp.TAKE_DAMAGES.contains(player.getItemBySlot(EquipmentSlot.CHEST).getItem())) {
-          ToolExp.addExpToTool(player, player.getItemBySlot(EquipmentSlot.CHEST), event.getAmount() * TinkersLevelingCommonConfigs.ARMOR_EXP_MULTIPLIER.get());
+          ToolExp.addExpToTool(player, player.getItemBySlot(EquipmentSlot.CHEST), amount * TinkersLevelingCommonConfigs.ARMOR_EXP_MULTIPLIER.get());
         }
         if (ToolExp.TAKE_DAMAGES.contains(player.getItemBySlot(EquipmentSlot.LEGS).getItem())) {
-          ToolExp.addExpToTool(player, player.getItemBySlot(EquipmentSlot.LEGS), event.getAmount() * TinkersLevelingCommonConfigs.ARMOR_EXP_MULTIPLIER.get());
+          ToolExp.addExpToTool(player, player.getItemBySlot(EquipmentSlot.LEGS), amount * TinkersLevelingCommonConfigs.ARMOR_EXP_MULTIPLIER.get());
         }
         if (ToolExp.TAKE_DAMAGES.contains(player.getItemBySlot(EquipmentSlot.FEET).getItem())) {
-          ToolExp.addExpToTool(player, player.getItemBySlot(EquipmentSlot.FEET), event.getAmount() * TinkersLevelingCommonConfigs.ARMOR_EXP_MULTIPLIER.get());
+          ToolExp.addExpToTool(player, player.getItemBySlot(EquipmentSlot.FEET), amount * TinkersLevelingCommonConfigs.ARMOR_EXP_MULTIPLIER.get());
         }
       }
     }
@@ -93,20 +109,43 @@ public class ForgeEvents {
       if (event.getEntity().level().isClientSide()) return;
       if (!ToolExp.DAMAGE_ENTITIES.contains(event.getEntity().getMainHandItem().getItem())) return;
 
-      ToolExp.addExpToTool(event.getEntity(), event.getEntity().getMainHandItem(), 5 * TinkersLevelingCommonConfigs.KILL_EXP_MULTIPLIER.get());
+      Double exp = -1d;
+      if (TinkersLevelingCommonConfigs.ENABLE_CUSTOM_EXP.get()){
+        String target = event.getTarget().getEncodeId();
+        exp = ToolExp.MELEE_EXPERIENCE.getOrDefault(target, -1d);
+        if (exp == 0) return;
+      }
+
+      if (exp == -1d) exp = TinkersLevelingCommonConfigs.BASE_EXPERIENCE_GAIN.get();
+      ToolExp.addExpToTool(event.getEntity(), event.getEntity().getMainHandItem(), exp * TinkersLevelingCommonConfigs.KILL_EXP_MULTIPLIER.get());
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onTillFarmland(BlockEvent.BlockToolModificationEvent event) {
-      if (event.isSimulated()) return;
+      if (event.getLevel().isClientSide() || event.isSimulated()) return;
       if (!event.getToolAction().equals(ToolActions.HOE_TILL)) return;
       if (!ToolExp.TILLS.contains(event.getHeldItemStack().getItem())) return;
 
-      ToolExp.addExpToTool(event.getPlayer(), event.getHeldItemStack(), 5);
+      BlockState tilled = event.getFinalState();
+      if (tilled == event.getState()) {
+        tilled = event.getState().getBlock().getToolModifiedState(event.getState(), event.getContext(), event.getToolAction(), true);
+      }
+      if (tilled == null) return;
+
+      ToolExp.addExpToTool(event.getPlayer(), event.getHeldItemStack(), TinkersLevelingCommonConfigs.BASE_EXPERIENCE_GAIN.get());
     }
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onShear(TinkerToolEvent.ToolShearEvent event) {
-      ToolExp.addExpToTool(event.getPlayer(), event.getStack(), 5);
+      if (event.getWorld().isClientSide()) return;
+      if (!ToolExp.SHEARS.contains(event.getStack().getItem())) return;
+
+      boolean sheared = event.getResult() == Event.Result.ALLOW;
+      if (event.getResult() == Event.Result.DEFAULT) {
+        sheared = event.getTarget() instanceof IForgeShearable target && target.isShearable(event.getStack(), event.getWorld(), event.getTarget().blockPosition());
+      }
+      if (!sheared) return;
+
+      ToolExp.addExpToTool(event.getPlayer(), event.getStack(), TinkersLevelingCommonConfigs.BASE_EXPERIENCE_GAIN.get());
     }
 
     @SubscribeEvent
@@ -115,8 +154,23 @@ public class ForgeEvents {
       if (!event.getRayTraceResult().getType().equals(HitResult.Type.ENTITY)) return;
 
       if (event.getProjectile().getOwner() instanceof Player player) {
-        if (!ToolExp.RANGED_DAMAGE_ENTITIES.contains(player.getMainHandItem().getItem())) return;
-        ToolExp.addExpToTool(player, player.getMainHandItem(), 5 * TinkersLevelingCommonConfigs.KILL_EXP_MULTIPLIER.get());
+        ItemStack tool = player.getMainHandItem();
+        if (event.getProjectile() instanceof ThrownTool thrownTool && tool.getItem() != thrownTool.getDisplayTool().getItem()) {
+          tool = thrownTool.getDisplayTool();
+        }
+
+        if (!ToolExp.RANGED_DAMAGE_ENTITIES.contains(tool.getItem())) return;
+
+        Double exp = -1d;
+        if (TinkersLevelingCommonConfigs.ENABLE_CUSTOM_EXP.get()) {
+          String target = ((EntityHitResult) event.getRayTraceResult()).getEntity().getEncodeId();
+          exp = ToolExp.MELEE_EXPERIENCE.getOrDefault(target, -1d);
+          if (exp == 0) return;
+        }
+
+        if (exp == -1d) exp = TinkersLevelingCommonConfigs.BASE_EXPERIENCE_GAIN.get();
+
+        ToolExp.addExpToTool(player, tool, exp * TinkersLevelingCommonConfigs.KILL_EXP_MULTIPLIER.get());
       }
     }
   }

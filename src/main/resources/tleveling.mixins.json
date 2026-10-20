@@ -5,7 +5,8 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "tleveling.refmap.json",
   "mixins": [
-    "ToolPartReplacementMixin$RecipeMixin"
+    "ToolPartReplacementMixin$RecipeMixin",
+    "ToolPartReplacementMixin$SwappingRecipeMixin"
   ],
   "client": [],
   "injectors": {
