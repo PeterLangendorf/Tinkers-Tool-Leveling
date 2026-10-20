@@ -32,11 +32,11 @@ public class TinkersLevelingCommonConfigs {
         .defineInRange("levelupExpRequired", 200, 1, Integer.MAX_VALUE);
     LEVELUP_INCREASE = BUILDER.comment("The exponential increase between tool exp levels. Default is 2.0")
         .defineInRange("levelupExpIncrease", 2d, 0, Integer.MAX_VALUE);
-    RANDOMNESS_FACTOR = BUILDER.comment("The randomness factor when gaining exp.")
+    RANDOMNESS_FACTOR = BUILDER.comment("The randomness factor when gaining exp. Default is 0.5")
         .comment("A value of 1 means that the tool's exp gain will be randomized from +-100% of what it was")
         .comment("For example, if a tool gains 5 exp with a randomness factor of 1, it can gain anywhere from 0 to 10 exp.")
         .defineInRange("randomnessFactor", 0.5, 0, 1);
-    EXP_LOSS_ON_REPLACE = BUILDER.comment("The amount the current exp is divided by when a part of the tool is replaced.")
+    EXP_LOSS_ON_REPLACE = BUILDER.comment("The amount the current exp is divided by when a part of the tool is replaced. Default is 2.0")
         .comment("A value of 0 means that it will be reset to 0")
             .comment("A value of 1 means that the exp will not be affected")
         .comment("A value of > 1 is what the exp will be divded by when a tool part is replaced")
