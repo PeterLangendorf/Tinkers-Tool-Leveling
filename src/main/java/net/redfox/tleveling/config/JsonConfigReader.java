@@ -106,19 +106,23 @@ public class JsonConfigReader {
   }
 
   private static void migrateLegacyConfigFolder(File legacyDir) {
-    File[] children = legacyDir.listFiles();
-    if (children != null) {
-      for (File child : children) {
-        if (child.getName().equals("modifiers") || child.getName().equals("modifiers.json")) {
-          migrateLegacyModifiersSource(child);
-        } else {
-          copyMissingRecursively(child, new File(getModDirectory(), child.getName()));
-        }
+    // Leave common.toml in place during migration since it's still used
+    boolean isConfigFolder = legacyDir.getName().equals(TinkersLeveling.MOD_ID);
+    File[] children = legacyDir.listFiles(child -> !(isConfigFolder && child.getName().equals("common.toml")));
+    if (children == null || children.length == 0) return;
+
+    for (File child : children) {
+      if (child.getName().equals("modifiers") || child.getName().equals("modifiers.json")) {
+        migrateLegacyModifiersSource(child);
+      } else {
+        copyMissingRecursively(child, new File(getModDirectory(), child.getName()));
       }
+      deleteRecursively(child);
     }
 
-    deleteRecursively(legacyDir);
-    TinkersLeveling.LOGGER.info("Migrated legacy config folder '{}' into '{}' and removed it", legacyDir.getName(), getModDirectory().getName());
+    // Remove the folder if nothing is in it
+    legacyDir.delete();
+    TinkersLeveling.LOGGER.info("Migrated legacy config folder '{}' into '{}'", legacyDir.getName(), getModDirectory().getName());
   }
 
   private static void migrateLegacyModifiersSource(File source) {

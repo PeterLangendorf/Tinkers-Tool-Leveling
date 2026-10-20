@@ -7,8 +7,10 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.IForgeShearable;
 import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
@@ -16,6 +18,8 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.eventbus.api.Event;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.server.command.ConfigCommand;
@@ -116,16 +120,31 @@ public class ForgeEvents {
       ToolExp.addExpToTool(event.getEntity(), event.getEntity().getMainHandItem(), exp * TinkersLevelingCommonConfigs.KILL_EXP_MULTIPLIER.get());
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onTillFarmland(BlockEvent.BlockToolModificationEvent event) {
-      if (event.isSimulated()) return;
+      if (event.getLevel().isClientSide() || event.isSimulated()) return;
       if (!event.getToolAction().equals(ToolActions.HOE_TILL)) return;
       if (!ToolExp.TILLS.contains(event.getHeldItemStack().getItem())) return;
 
+      BlockState tilled = event.getFinalState();
+      if (tilled == event.getState()) {
+        tilled = event.getState().getBlock().getToolModifiedState(event.getState(), event.getContext(), event.getToolAction(), true);
+      }
+      if (tilled == null) return;
+
       ToolExp.addExpToTool(event.getPlayer(), event.getHeldItemStack(), TinkersLevelingCommonConfigs.BASE_EXPERIENCE_GAIN.get());
     }
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onShear(TinkerToolEvent.ToolShearEvent event) {
+      if (event.getWorld().isClientSide()) return;
+      if (!ToolExp.SHEARS.contains(event.getStack().getItem())) return;
+
+      boolean sheared = event.getResult() == Event.Result.ALLOW;
+      if (event.getResult() == Event.Result.DEFAULT) {
+        sheared = event.getTarget() instanceof IForgeShearable target && target.isShearable(event.getStack(), event.getWorld(), event.getTarget().blockPosition());
+      }
+      if (!sheared) return;
+
       ToolExp.addExpToTool(event.getPlayer(), event.getStack(), TinkersLevelingCommonConfigs.BASE_EXPERIENCE_GAIN.get());
     }
 
